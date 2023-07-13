@@ -6,7 +6,7 @@ import {useNavigate} from "react-router-dom";
 import {useBeerRecipesStore} from '../../store/store.ts';
 //components
 import {Container, Grid, Button, CircularProgress} from '@mui/material';
-import RecipeCard from "../../components/recipe-card/recipe-card.component.tsx";
+import {RecipeCard} from "../../components";
 //types
 import {Recipe} from '../../types/recipe-api.type.ts';
 

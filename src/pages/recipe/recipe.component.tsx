@@ -1,13 +1,26 @@
+//libs
 import { useNavigate, useParams } from 'react-router-dom';
-import { useBeerRecipesStore } from '../../store/store.ts';
-import {Container, Typography, Button} from '@mui/material';
-import { StoreState } from "../../store/store.ts";
-import { Recipe as RecipeType } from "../../types/recipe-api.type.ts";
 import styled from "styled-components";
-import {useEffect} from "react";
+import {useCallback, useEffect} from "react";
+//store
+import { useBeerRecipesStore } from '../../store/store.ts';
+//components
+import {Container, Typography, Button} from '@mui/material';
+//types
+import { Recipe as RecipeType } from "../../types/recipe-api.type.ts";
+
+const BackButton = styled(Button)`
+      background-color: #37664E;
+      color: white;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: #37504E;
+      }
+    `;
 const Recipe = () => {
     const { id } = useParams();
-    const recipes = useBeerRecipesStore((state: StoreState) => state.recipes);
+    const { recipes } = useBeerRecipesStore((state) => state);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -16,9 +29,9 @@ const Recipe = () => {
 
     const recipe: RecipeType | null = id ? recipes.find((r) => r.id === parseInt(id)) || null : null;
 
-    const handleGoBack = () => {
+    const handleGoBack = useCallback(() => {
         navigate(-1);
-    };
+    }, [navigate]);
 
     if (!recipe) {
         return (
@@ -47,16 +60,6 @@ const Recipe = () => {
             </>
         );
     };
-
-    const BackButton = styled(Button)`
-      background-color: #37664E;
-      color: white;
-      transition: background-color 0.3s ease;
-
-      &:hover {
-        background-color: #37504E;
-      }
-    `;
 
     return (
         <Container sx={{padding: '20px'}}>

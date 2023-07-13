@@ -1,4 +1,6 @@
+//libs
 import {create} from 'zustand';
+//types
 import {Recipe} from '../types/recipe-api.type';
 
 export interface StoreState {

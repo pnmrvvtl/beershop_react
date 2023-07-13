@@ -1,12 +1,10 @@
 //libs
 import {Outlet} from 'react-router-dom';
-//meterial components
+import React, {ReactNode, useCallback} from "react";
+//components
 import MenuIcon from '@mui/icons-material/Menu';
 import SportsBarIcon from '@mui/icons-material/SportsBar';
 import {AppBar, Box, Container, IconButton, Menu, Toolbar, Typography,} from '@mui/material';
-//components
-import React, {ReactNode} from "react";
-
 
 interface Props {
     children?: ReactNode;
@@ -18,13 +16,13 @@ function Navigation({ children }: Props) {
 
     // const navigate = useNavigate();
 
-    const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+    const handleOpenNavMenu = useCallback((event: React.MouseEvent<HTMLElement>) => {
         setAnchorElNav(event.currentTarget);
-    };
+    }, []);
 
-    const handleCloseNavMenu = () => {
+    const handleCloseNavMenu = useCallback(() => {
         setAnchorElNav(null);
-    };
+    }, []);
 
 
     return (

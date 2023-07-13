@@ -1,43 +1,35 @@
-import React from 'react';
+//libs
 import {
     Route,
     RouterProvider,
     createBrowserRouter,
     createRoutesFromElements
 } from 'react-router-dom';
-import Navigation from "./components/navigation/navigation.component.tsx";
-import RecipesList from "./pages/recipes-list/recipes-list.component.tsx";
-import Recipe from "./pages/recipe/recipe.component.tsx";
+//components
+import {Navigation} from "./components";
+import {Error, Recipe, RecipesList} from "./pages";
 
-const ErrorPage: React.FC = () => {
-    return (
-        <div>
-            <h2>404 - Page Not Found</h2>
-            <p>The requested page does not exist.</p>
-        </div>
-    );
-};
 
 const router = createBrowserRouter(
     createRoutesFromElements(
         <Route
             path="/"
-            element={<Navigation />}
+            element={<Navigation/>}
             errorElement={
                 <Navigation>
-                    <ErrorPage />
+                    <Error/>
                 </Navigation>
             }
         >
-            <Route index path="/" element={<RecipesList/>} />
-            <Route path="/recipe/:id" element={<Recipe/>} />
+            <Route index path="/" element={<RecipesList/>}/>
+            <Route path="/recipe/:id" element={<Recipe/>}/>
         </Route>,
     ),
 );
 
-const App= () => {
+const App = () => {
     return (
-        <RouterProvider router={router} />
+        <RouterProvider router={router}/>
     );
 };
 

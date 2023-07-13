@@ -1,6 +1,9 @@
+//libs
 import React from 'react';
-import { Card, CardContent, Typography } from '@mui/material';
 import styled from 'styled-components';
+//components
+import { Card, CardContent, Typography } from '@mui/material';
+//types
 import {Recipe} from "../../types/recipe-api.type.ts";
 
 interface RecipeCardProps {
