@@ -1,59 +1,46 @@
-import {useEffect, useState} from 'react';
-import {useStore} from '../../store/store.ts';
-import {Container, Grid, Button, Card, CardContent, Typography} from '@mui/material';
-import {Recipe} from '../../types/recipe-api.type.ts';
+//libs
+import {useCallback, useEffect, useState} from 'react';
 import styled from 'styled-components';
+import {useNavigate} from "react-router-dom";
+//store
+import {useBeerRecipesStore} from '../../store/store.ts';
+//components
+import {Container, Grid, Button, CircularProgress} from '@mui/material';
+import RecipeCard from "../../components/recipe-card/recipe-card.component.tsx";
+//types
+import {Recipe} from '../../types/recipe-api.type.ts';
 
 
-const DeleteButton = styled(Button)`&& {
-      position: fixed;
-      background-color: rgba(55, 102, 78);
-      width: 100px;
-      height: 50px;
-      opacity: 0.8;
-      color: white;
-      bottom: 0;
-      right: 0;
-      margin: 1rem;
-    }
+const DeleteButton = styled(Button)`
+  position: fixed;
+  background-color: rgba(55, 102, 78);
+  width: 100px;
+  height: 50px;
+  opacity: 0.8;
+  color: white;
+  bottom: 0;
+  right: 0;
+  margin: 1rem;
+  transition: background-color 0.3s ease;
 
-      &&:hover {
-        background-color: rgba(55, 80, 78);
-        color: white;
-      }
-    `;
 
-const CardImage = styled.img`
-      width: 100%;
-      height: auto;
-      max-height: 55vh;
-      object-fit: contain;
-    `;
-
-const CardContainer = styled(CardContent)`
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      align-items: center;
-      text-align: center;
-      height: 100%;
-    `;
-
-const CardWrapper = styled(Card)`
-      display: flex;
-      flex-direction: column;
-      height: 83vh;
-    `;
+  :hover {
+    background-color: rgba(55, 80, 78);
+  }
+`;
 
 const RecipesList = () => {
-    const fetchRecipes = useStore((state) => state.fetchRecipes);
-    const recipes = useStore((state) => state.recipes);
-    const addPage = useStore((state) => state.addPage);
-    const selectedRecipes = useStore((state) => state.selectedRecipes);
-    const deleteSelectedRecipes = useStore((state) => state.deleteSelectedRecipes);
+    const {
+        fetchRecipes,
+        addPage,
+        deleteSelectedRecipes,
+        updateSelectedRecipes,
+        selectedRecipes,
+        recipes,
+    } = useBeerRecipesStore((state) => state);
     const [isLoading, setIsLoading] = useState(false);
     const [range, setRange] = useState<[number, number]>([0, 15]);
-
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (recipes.length < 15) {
@@ -68,20 +55,31 @@ const RecipesList = () => {
                     console.log('error while loading data from api');
                 });
         }
-    }, [fetchRecipes]);
+    }, [fetchRecipes, recipes.length]);
 
     useEffect(() => {
         const handleScroll = () => {
-            const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
-            if (scrollTop + clientHeight >= scrollHeight - 20) {
+            const {scrollTop, clientHeight} = document.documentElement;
+            if (scrollTop === 0) {
+                setIsLoading(false);
+                if (range[0] >= 5) {
+                    setRange((prevRange) => [prevRange[0] - 5, prevRange[1] - 5]);
+                    window.scrollTo(0, 10);
+                } else if (range[0] > 0) {
+                    setRange((prevRange) => [0, prevRange[1] - range[0]]);
+                }
+            } else if (scrollTop + clientHeight >= document.documentElement.scrollHeight) {
                 if (recipes.length < range[1] + 5) {
                     addPage();
+                    setIsLoading(true);
                     fetchRecipes()
                         .then(() => {
+                            setIsLoading(false);
                             setRange((prevRange) => [prevRange[0] + 5, prevRange[1] + 5]);
-                            console.log('loading succeded');
+                            console.log('loading succeeded');
                         })
                         .catch(() => {
+                            setIsLoading(false);
                             console.log('error while loading data from api');
                         });
                 } else {
@@ -95,13 +93,13 @@ const RecipesList = () => {
         return () => {
             window.removeEventListener('scroll', handleScroll);
         };
-    }, []);
+    }, [range, recipes, addPage, fetchRecipes]);
 
-    const handleRecipeSelection = (recipe: Recipe) => {
-        console.log(recipe);
-    };
+    const handleRecipeSelection = useCallback((recipe: Recipe) => {
+        navigate(`/recipe/${recipe.id}`);
+    }, [navigate]);
 
-    const handleDeleteSelected = async () => {
+    const handleDeleteSelected = useCallback(async () => {
         setIsLoading(true);
         try {
             await deleteSelectedRecipes();
@@ -109,59 +107,42 @@ const RecipesList = () => {
             console.log(e);
         }
         setIsLoading(false);
-    };
+    }, [deleteSelectedRecipes]);
 
-    const handleAddToSelected = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, recipe: Recipe) => {
+    const handleAddToSelected = useCallback((event: React.MouseEvent<HTMLDivElement, MouseEvent>, recipe: Recipe) => {
         event.preventDefault();
         if (selectedRecipes.includes(recipe)) {
             const newSelectedRecipes = selectedRecipes.filter((selectedRecipe) => selectedRecipe.id !== recipe.id);
-            useStore.setState({selectedRecipes: newSelectedRecipes});
+            updateSelectedRecipes(newSelectedRecipes);
         } else {
             const newSelectedRecipes = [...selectedRecipes, recipe];
-            useStore.setState({selectedRecipes: newSelectedRecipes});
+            updateSelectedRecipes(newSelectedRecipes);
         }
-    };
+    }, [selectedRecipes]);
 
     return (
-        isLoading ? <div>Loading...</div> :
-            <Container
-
-            >
-                {selectedRecipes.length > 0 && <DeleteButton onClick={handleDeleteSelected}>Delete</DeleteButton>}
-                <Grid container spacing={2}>
-                    {recipes.slice(range[0], range[1]).map((recipe, idx) => (
-                        <Grid item xs={2.4} sm={2.4} md={2.4} key={recipe.id}>
-                            <CardWrapper
-                                onClick={() => handleRecipeSelection(recipe)}
-                                style={{backgroundColor: selectedRecipes.includes(recipe) ? 'lightgrey' : 'white'}}
-                                onContextMenu={(event) => handleAddToSelected(event, recipe)}
-                                sx={{
-                                    boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.2)', // Customize the box shadow here
-                                    transition: 'box-shadow 0.3s ease', // Add transition for smooth hover effect
-                                    margin: '1rem 0',
-                                    '&:hover': {
-                                        boxShadow: '0px 0px 20px rgba(55, 102, 78)', // Customize the box shadow on hover
-                                    },
-                                }}
-                            >
-                                <CardContainer>
-                                    <CardImage src={recipe.image_url} alt={recipe.name}/>
-                                    <Typography variant="h6"
-                                                sx={{height: '5rem', overflow:'hidden', display: 'flex'
-                                                , justifyContent: 'center', alignItems: 'center'
-                                    }}>
-                                        {`${idx + 1 + range[0]}. `+recipe.name}
-                                    </Typography>
-                                    <Typography variant="subtitle1"
-                                                sx={{height: '2rem', overflow:'hidden'}}>
-                                        {recipe.tagline}
-                                    </Typography>
-                                </CardContainer>
-                            </CardWrapper>
-                        </Grid>
-                    ))}
-                </Grid>
-            </Container>
+        <Container>
+            {isLoading &&
+                <CircularProgress
+                    sx={{position: 'fixed', top: '50%', right: '50%'}}
+                    color="success"
+                />}
+            {selectedRecipes.length > 0 && <DeleteButton onClick={handleDeleteSelected}>Delete</DeleteButton>}
+            <Grid container spacing={2}>
+                {recipes.slice(range[0], range[1]).map((recipe, idx) => (
+                    <Grid item xs={2.4} sm={2.4} md={2.4} key={recipe.id}>
+                        <RecipeCard
+                            recipe={recipe}
+                            idx={idx}
+                            range={range}
+                            selectedRecipes={selectedRecipes}
+                            handleRecipeSelection={handleRecipeSelection}
+                            handleAddToSelected={handleAddToSelected}
+                        />
+                    </Grid>
+                ))}
+            </Grid>
+        </Container>
     );
 };
 

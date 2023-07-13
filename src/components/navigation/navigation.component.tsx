@@ -1,9 +1,9 @@
 //libs
-import {Link, Outlet} from 'react-router-dom';
+import {Outlet} from 'react-router-dom';
 //meterial components
 import MenuIcon from '@mui/icons-material/Menu';
 import SportsBarIcon from '@mui/icons-material/SportsBar';
-import {AppBar, Box, Button, Container, IconButton, Menu, Toolbar, Typography,} from '@mui/material';
+import {AppBar, Box, Container, IconButton, Menu, Toolbar, Typography,} from '@mui/material';
 //components
 import React, {ReactNode} from "react";
 
@@ -30,9 +30,8 @@ function Navigation({ children }: Props) {
     return (
         <>
             <AppBar position='sticky' sx={{ backgroundColor: `${colorHeader}`, color: '#ffff', height: '12vh'}}>
-                <Container maxWidth='xl'>
-                    <Toolbar disableGutters>
-                        <SportsBarIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>
+                <Container maxWidth='xl' >
+                    <Toolbar disableGutters sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                         <Typography
                             variant='h6'
                             noWrap
@@ -41,15 +40,18 @@ function Navigation({ children }: Props) {
                             sx={{
                                 mr: 2,
                                 display: { xs: 'none', md: 'flex' },
-                                fontFamily: 'Ubuntu',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                fontFamily: 'Roboto',
                                 fontWeight: 700,
-                                fontSize: '3rem',
+                                fontSize: '7vh',
                                 letterSpacing: '.3rem',
                                 color: 'white',
                                 '&:hover': { color: `${hoverHeader}` },
                                 textDecoration: 'none',
                             }}
                         >
+                            <SportsBarIcon sx={{display: {xs: 'none', md: 'flex'}, mr: 1}}/>
                             Beer Recipes
                         </Typography>
 
@@ -82,7 +84,7 @@ function Navigation({ children }: Props) {
                                     display: { xs: 'block', md: 'none' },
                                 }}
                             >
-                                000000000
+                                Here you can find all the recipes for your favorite beer
                             </Menu>
                         </Box>
                         <SportsBarIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
@@ -102,30 +104,29 @@ function Navigation({ children }: Props) {
                                 textDecoration: 'none',
                             }}
                         >
-                            RS-Healthy
+                            Beer Recipes
                         </Typography>
-                        <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-                                <Link
-                                    to={`/11111111111`}
-                                    style={{
-                                        textDecoration: 'none',
-                                        color: 'white',
-                                        fontFamily: 'Ubuntu',
-                                        fontSize: '1.1rem',
-                                    }}
-                                >
-                                    <Button
-                                        style={{
-                                            textDecoration: 'none',
-                                            color: 'white',
-                                            fontFamily: 'Ubuntu',
-                                            fontSize: '1.1rem',
-                                        }}
-                                        onClick={handleCloseNavMenu}
-                                    >
-                                        1111111111111
-                                    </Button>
-                                </Link>
+                        <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                            <Typography
+                                variant='h6'
+                                noWrap
+                                component='a'
+                                target='_blank'
+                                href='https://github.com/pnmrvvtl'
+                                sx={{
+                                    mr: 2,
+                                    display: { xs: 'none', md: 'flex' },
+                                    fontFamily: 'Roboto',
+                                    fontWeight: 700,
+                                    fontSize: '4vh',
+                                    letterSpacing: '.3rem',
+                                    color: 'white',
+                                    '&:hover': { color: `${hoverHeader}` },
+                                    textDecoration: 'none',
+                                }}
+                            >
+                                        GitHub Vitalii Ponomarov
+                                </Typography>
                         </Box>
                     </Toolbar>
                 </Container>

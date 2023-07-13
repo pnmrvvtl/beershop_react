@@ -8,16 +8,20 @@ export interface StoreState {
     deleteSelectedRecipes: () => Promise<void>;
     currentPage: number;
     addPage: () => void;
+    updateSelectedRecipes: (recipes: Recipe[]) => void;
 }
 
 const MIN_PER_RENDER = 15;
 
-export const useStore = create<StoreState>((set, getState) => ({
+export const useBeerRecipesStore = create<StoreState>((set, getState) => ({
     recipes: [],
     selectedRecipes: [],
     currentPage: 1,
     addPage: () => {
         set((state) => ({currentPage: state.currentPage + 1}));
+    },
+    updateSelectedRecipes: (recipes) => {
+        set({selectedRecipes: recipes});
     },
     fetchRecipes: async () => {
         try {
